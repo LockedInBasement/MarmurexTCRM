@@ -1,2 +1,2 @@
 # MarmurexTCRM
-MVP for Marmurex.Author:Dariusz Strych
+MVP(Minimal Viable Product) for Marmurex. Author:Dariusz Strych
