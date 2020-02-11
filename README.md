@@ -1,2 +1,2 @@
 # MarmurexTCRM
-MVPMarmurex.Author:Dariusz Strych
+MVP for Marmurex.Author:Dariusz Strych
