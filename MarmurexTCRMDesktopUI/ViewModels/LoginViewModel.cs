@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using MarmurexTCRMDesktopUI.Helpers;
+using MarmurexTCRMDesktopUI.Library.Api;
 
 namespace MarmurexTCRMDesktopUI.ViewModels
 {
@@ -67,10 +67,12 @@ namespace MarmurexTCRMDesktopUI.ViewModels
             try
             {
                 var result = await _apihelper.Authenticate(UserName, Password);
+
+                await _apihelper.GetLoggedInUserInfo(result.Access_Token);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+               Console.WriteLine(ex.Message);
             }
         }
     }

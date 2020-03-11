@@ -8,6 +8,8 @@ using System.Windows;
 using MarmurexTCRMDesktopUI.ViewModels;
 using MarmurexTCRMDesktopUI.Helpers;
 using System.Windows.Controls;
+using MarmurexTCRMDesktopUI.Library.Api;
+using MarmurexTCRMDesktopUI.Library.Models;
 
 namespace MarmurexTCRMDesktopUI
 {
@@ -32,6 +34,7 @@ namespace MarmurexTCRMDesktopUI
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
+                .Singleton<ILoggedInUserModel, LoggedInUserModel>()
                 .Singleton<IAPIHelper, APIHelper>();
 
             GetType().Assembly.GetTypes()

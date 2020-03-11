@@ -323,9 +323,9 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TRMDataManager.Library\TCRMDataManager.Library.csproj">
+    <ProjectReference Include="..\TRMDataManager.Library\MarmurexTCRMDataManager.Library.csproj">
       <Project>{66A7C620-8F13-4FCA-A5AC-7654345C544F}</Project>
-      <Name>TCRMDataManager.Library</Name>
+      <Name>MarmurexTCRMDataManager.Library</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
