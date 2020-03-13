@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
+using MarmurexTCRMDesktopUI.EventModels;
 using MarmurexTCRMDesktopUI.Library.Api;
 
 namespace MarmurexTCRMDesktopUI.ViewModels
@@ -13,10 +14,12 @@ namespace MarmurexTCRMDesktopUI.ViewModels
         private string _userName;
         private string _password;
         private IAPIHelper _apihelper;
+        private IEventAggregator _events;
 
-        public LoginViewModel(IAPIHelper apihelper)
+        public LoginViewModel(IAPIHelper apihelper, IEventAggregator events)
         {
             _apihelper = apihelper;
+            _events = events;
         }
 
         public string UserName 
@@ -69,6 +72,8 @@ namespace MarmurexTCRMDesktopUI.ViewModels
                 var result = await _apihelper.Authenticate(UserName, Password);
 
                 await _apihelper.GetLoggedInUserInfo(result.Access_Token);
+
+                _events.PublishOnUIThread(new LogOnEvent());
             }
             catch (Exception ex)
             {
