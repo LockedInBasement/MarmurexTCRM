@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 
-namespace TRMDataManager.Library.Internal.DataAccess
+namespace MarmurexTCRMDataManager.Library.Internal.DataAccess
 {
     internal class SqlDataAccess
     {

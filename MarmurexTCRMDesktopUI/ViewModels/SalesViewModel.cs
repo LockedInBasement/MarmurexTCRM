@@ -5,14 +5,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using MarmurexTCRMDesktopUI.Library.Api;
+using MarmurexTCRMDesktopUI.Library.Models;
 
 namespace MarmurexTCRMDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
-		private BindingList<string> _products;
+		IProductEndpoint _productEndpoint;
 
-		public BindingList<string> Products
+		public SalesViewModel(IProductEndpoint productEndpoint)
+		{
+			_productEndpoint = productEndpoint;
+		}
+
+		public async Task LoadProducts()
+		{
+			var productList = await _productEndpoint.GetAll();
+			Products = new BindingList<ProductModel>(productList);
+		}
+		protected override async void OnViewLoaded(object view)
+		{
+			base.OnViewLoaded(view);
+			await LoadProducts();
+		}
+
+		private BindingList<ProductModel> _products;
+
+		public BindingList<ProductModel> Products
 		{
 			get { return _products; }
 			set 
@@ -22,9 +42,9 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			}
 		}
 
-		private BindingList<string> _cart;
+		private BindingList<ProductModel> _cart;
 
-		public BindingList<string> Cart
+		public BindingList<ProductModel> Cart
 		{
 			get { return _cart; }
 			set 
