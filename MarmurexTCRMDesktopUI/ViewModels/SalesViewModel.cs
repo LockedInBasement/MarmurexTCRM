@@ -7,16 +7,19 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using MarmurexTCRMDesktopUI.Library.Api;
 using MarmurexTCRMDesktopUI.Library.Models;
+using MarmurexTCRMDesktopUI.Library.Helpers;
 
 namespace MarmurexTCRMDesktopUI.ViewModels
 {
 	public class SalesViewModel : Screen
 	{
 		IProductEndpoint _productEndpoint;
+		IConfigHelper _configHelper;
 
-		public SalesViewModel(IProductEndpoint productEndpoint)
+		public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
 		{
 			_productEndpoint = productEndpoint;
+			_configHelper = configHelper;
 		}
 
 		public async Task LoadProducts()
@@ -85,22 +88,28 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 		{
 			get
 			{
-				decimal subTotal = 0;
-
-				foreach (var item in Cart)
-				{
-					subTotal += (item.Product.RetailPrice * item.QuantityInCart);
-				}
-
-				return subTotal.ToString("C");
+				return CalculateSubTotal().ToString("C");
 			}
+		}
+
+		private decimal CalculateSubTotal()
+		{
+			decimal subTotal = 0;
+
+			foreach (var item in Cart)
+			{
+				subTotal += (item.Product.RetailPrice * item.QuantityInCart);
+			}
+
+			return subTotal;
 		}
 
 		public string Total
 		{
 			get
 			{
-				return "$0.00";
+				decimal total = CalculateSubTotal() + CalculateTax();
+				return total.ToString("C");
 			}
 		}
 
@@ -108,8 +117,24 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 		{
 			get
 			{
-				return "$0.00";
+				return CalculateTax().ToString("C");
 			}
+		}
+
+		private decimal CalculateTax()
+		{
+			decimal taxTotal = 0;
+			decimal taxRate = _configHelper.GetTaxRate()/100;
+
+			foreach (var item in Cart)
+			{
+				if (item.Product.IsTaxable)
+				{
+					taxTotal += (item.Product.RetailPrice * item.QuantityInCart * taxRate);
+				}
+			}
+
+			return taxTotal;
 		}
 
 		public bool CanAddToCart
@@ -152,6 +177,8 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			SelectedProduct.QuantityInStock -= ItemQuantity;
 			ItemQuantity = 1;
 			NotifyOfPropertyChange(() => SubTotal);
+			NotifyOfPropertyChange(() => Tax);
+			NotifyOfPropertyChange(() => Total);
 		}
 
 		public bool CanRemoveFromCart
@@ -166,7 +193,9 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 
 		public void RemoveFromCart()
 		{
-
+			NotifyOfPropertyChange(() => SubTotal);
+			NotifyOfPropertyChange(() => Tax);
+			NotifyOfPropertyChange(() => Total);
 		}
 
 		public bool CanCheckOut

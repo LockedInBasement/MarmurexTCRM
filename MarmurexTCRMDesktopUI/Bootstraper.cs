@@ -10,6 +10,7 @@ using MarmurexTCRMDesktopUI.Helpers;
 using System.Windows.Controls;
 using MarmurexTCRMDesktopUI.Library.Api;
 using MarmurexTCRMDesktopUI.Library.Models;
+using MarmurexTCRMDesktopUI.Library.Helpers;
 
 namespace MarmurexTCRMDesktopUI
 {
@@ -36,6 +37,7 @@ namespace MarmurexTCRMDesktopUI
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<ILoggedInUserModel, LoggedInUserModel>()
+                .Singleton<IConfigHelper, ConfigHelper>()
                 .Singleton<IAPIHelper, APIHelper>();
 
             GetType().Assembly.GetTypes()
