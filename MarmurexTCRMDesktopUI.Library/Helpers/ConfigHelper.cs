@@ -11,7 +11,7 @@ namespace MarmurexTCRMDesktopUI.Library.Helpers
     {
         public decimal GetTaxRate()
         {
-            string rateText = ConfigurationManager.AppSettings["tax rate"];
+            string rateText = ConfigurationManager.AppSettings["taxRate"];
 
             bool isValidTaxRate = Decimal.TryParse(rateText, out decimal output);
 
