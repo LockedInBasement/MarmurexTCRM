@@ -15,11 +15,13 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 	{
 		IProductEndpoint _productEndpoint;
 		IConfigHelper _configHelper;
+		ISaleEndPoint _saleEndPoint;
 
-		public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
+		public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndPoint saleEndPoint)
 		{
 			_productEndpoint = productEndpoint;
 			_configHelper = configHelper;
+			_saleEndPoint = saleEndPoint;
 		}
 
 		public async Task LoadProducts()
@@ -184,6 +186,7 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			NotifyOfPropertyChange(() => SubTotal);
 			NotifyOfPropertyChange(() => Tax);
 			NotifyOfPropertyChange(() => Total);
+			NotifyOfPropertyChange(() => CanCheckOut);
 		}
 
 		public bool CanRemoveFromCart
@@ -201,6 +204,7 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			NotifyOfPropertyChange(() => SubTotal);
 			NotifyOfPropertyChange(() => Tax);
 			NotifyOfPropertyChange(() => Total);
+			NotifyOfPropertyChange(() => CanCheckOut);
 		}
 
 		public bool CanCheckOut
@@ -209,13 +213,29 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			{
 				bool output = false;
 
+				if(Cart.Count > 0)
+				{
+					output = true;
+				}
+
 				return output;
 			}
 		}
 
-		public void CheckOut()
+		public async Task CheckOut()
 		{
+			SaleModel sale = new SaleModel();
 
+			foreach (var item in Cart)
+			{
+				sale.saleDetails.Add(new SaleDetailModel
+				{
+					ProductId = item.Product.Id,
+					Quantity = item.QuantityInCart
+				});
+			}
+
+			await _saleEndPoint.PostSale(sale);
 		}
 	}
 }

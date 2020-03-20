@@ -3,7 +3,7 @@
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
     [SaleId] INT NOT NULL, 
     [ProductId] INT NOT NULL, 
-    [Quanity] INT NOT NULL DEFAULT 1,
+    [Quantity] INT NOT NULL DEFAULT 1,
     [PurchasePrice] MONEY NOT NULL, 
     [Tax] MONEY NOT NULL DEFAULT 0, 
     CONSTRAINT [FK_SaleDetail_SaleTable] FOREIGN KEY ([SaleId]) REFERENCES [Sale]([Id]), 

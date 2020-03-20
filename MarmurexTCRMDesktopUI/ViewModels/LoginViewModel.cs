@@ -11,8 +11,8 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 {
     public class LoginViewModel : Screen
     {
-        private string _userName;
-        private string _password;
+        private string _userName = "ds@mail.com";
+        private string _password = "Qwe12345!";
         private IAPIHelper _apihelper;
         private IEventAggregator _events;
 
