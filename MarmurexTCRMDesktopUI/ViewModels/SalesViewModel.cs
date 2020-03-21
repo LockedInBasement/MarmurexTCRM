@@ -8,6 +8,8 @@ using System.ComponentModel;
 using MarmurexTCRMDesktopUI.Library.Api;
 using MarmurexTCRMDesktopUI.Library.Models;
 using MarmurexTCRMDesktopUI.Library.Helpers;
+using AutoMapper;
+using MarmurexTCRMDesktopUI.Models;
 
 namespace MarmurexTCRMDesktopUI.ViewModels
 {
@@ -16,18 +18,22 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 		IProductEndpoint _productEndpoint;
 		IConfigHelper _configHelper;
 		ISaleEndPoint _saleEndPoint;
+		IMapper _mapper;
 
-		public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndPoint saleEndPoint)
+		public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndPoint saleEndPoint, IMapper mapper)
 		{
 			_productEndpoint = productEndpoint;
 			_configHelper = configHelper;
 			_saleEndPoint = saleEndPoint;
+			_mapper = mapper;
 		}
 
 		public async Task LoadProducts()
 		{
 			var productList = await _productEndpoint.GetAll();
-			Products = new BindingList<ProductModel>(productList);
+			var products = _mapper.Map<List<ProductDisplayModel>>(productList);
+
+			Products = new BindingList<ProductDisplayModel>(products);
 		}
 
 		protected override async void OnViewLoaded(object view)
@@ -36,9 +42,9 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			await LoadProducts();
 		}
 
-		private BindingList<ProductModel> _products;
+		private BindingList<ProductDisplayModel> _products;
 
-		public BindingList<ProductModel> Products
+		public BindingList<ProductDisplayModel> Products
 		{
 			get { return _products; }
 			set
@@ -48,9 +54,9 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			}
 		}
 
-		private ProductModel _selectedProduct;
+		private ProductDisplayModel _selectedProduct;
 
-		public ProductModel SelectedProduct
+		public ProductDisplayModel SelectedProduct
 		{
 			get { return _selectedProduct; }
 			set
@@ -61,9 +67,22 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			}
 		}
 
-		private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+		private CartItemDisplayModel _selectedCartItem;
 
-		public BindingList<CartItemModel> Cart
+		public CartItemDisplayModel SelectedCartItem
+		{
+			get { return _selectedCartItem; }
+			set
+			{
+				_selectedCartItem = value;
+				NotifyOfPropertyChange(() => SelectedCartItem);
+				NotifyOfPropertyChange(() => CanRemoveFromCart);
+			}
+		}
+
+		private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
+
+		public BindingList<CartItemDisplayModel> Cart
 		{
 			get { return _cart; }
 			set
@@ -161,18 +180,15 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 
 		public void AddToCart()
 		{
-			CartItemModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
+			CartItemDisplayModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
 
 			if(existingItem != null)
 			{
 				existingItem.QuantityInCart += ItemQuantity;
-
-				Cart.Remove(existingItem);
-				Cart.Add(existingItem);
 			}
 			else
 			{
-				CartItemModel item = new CartItemModel
+				CartItemDisplayModel item = new CartItemDisplayModel
 				{
 					Product = SelectedProduct,
 					QuantityInCart = ItemQuantity
@@ -195,12 +211,28 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			{
 				bool output = false;
 
+				if(SelectedCartItem != null && SelectedCartItem?.Product.QuantityInStock > 0)
+				{
+					output = true;
+				}
+
 				return output;
 			}
 		}
 
 		public void RemoveFromCart()
 		{
+			SelectedCartItem.Product.QuantityInStock += 1;
+
+			if (SelectedCartItem.QuantityInCart > 1)
+			{
+				SelectedCartItem.QuantityInCart -= 1;
+			}
+			else
+			{
+				Cart.Remove(SelectedCartItem);
+			}
+
 			NotifyOfPropertyChange(() => SubTotal);
 			NotifyOfPropertyChange(() => Tax);
 			NotifyOfPropertyChange(() => Total);
