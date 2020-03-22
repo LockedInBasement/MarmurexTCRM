@@ -22,20 +22,20 @@ namespace MarmurexTCRMDesktopUI.ViewModels
             _events = events;
         }
 
-        public string UserName 
-        { 
+        public string UserName
+        {
             get
-            { 
+            {
                 return _userName;
             }
-            set 
+            set
             {
                 _userName = value;
                 NotifyOfPropertyChange(() => UserName);
                 NotifyOfPropertyChange(() => CanLogIn);
-            }  
+            }
         }
-        
+
         public string Password
         {
             get
@@ -52,7 +52,7 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 
         public bool CanLogIn
         {
-            get 
+            get
             {
                 bool output = false;
 
@@ -77,7 +77,35 @@ namespace MarmurexTCRMDesktopUI.ViewModels
             }
             catch (Exception ex)
             {
-               Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public bool IsErrorVisible
+        {
+            get
+            {
+                bool output = false;
+
+                if (ErrorMessage?.Length > 0)
+                {
+                    output = true;
+                }
+
+                return output;
+            }
+        }
+
+        private string _errorMessage;
+
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set 
+            { 
+                _errorMessage = value;
+                NotifyOfPropertyChange(() => IsErrorVisible);
+                NotifyOfPropertyChange(() => ErrorMessage);
             }
         }
     }

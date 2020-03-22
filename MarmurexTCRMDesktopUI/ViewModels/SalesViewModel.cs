@@ -211,7 +211,7 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			{
 				bool output = false;
 
-				if(SelectedCartItem != null && SelectedCartItem?.Product.QuantityInStock > 0)
+				if(SelectedCartItem != null && SelectedCartItem?.QuantityInCart > 0)
 				{
 					output = true;
 				}
@@ -237,6 +237,7 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			NotifyOfPropertyChange(() => Tax);
 			NotifyOfPropertyChange(() => Total);
 			NotifyOfPropertyChange(() => CanCheckOut);
+			NotifyOfPropertyChange(() => CanAddToCart);
 		}
 
 		public bool CanCheckOut
@@ -254,6 +255,18 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			}
 		}
 
+		private async Task ResetSalesViewModel()
+		{
+			Cart = new BindingList<CartItemDisplayModel>();
+
+			await LoadProducts();
+
+			NotifyOfPropertyChange(() => SubTotal);
+			NotifyOfPropertyChange(() => Tax);
+			NotifyOfPropertyChange(() => Total);
+			NotifyOfPropertyChange(() => CanCheckOut);
+		}
+
 		public async Task CheckOut()
 		{
 			SaleModel sale = new SaleModel();
@@ -268,6 +281,8 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			}
 
 			await _saleEndPoint.PostSale(sale);
+
+			await ResetSalesViewModel();
 		}
 	}
 }
