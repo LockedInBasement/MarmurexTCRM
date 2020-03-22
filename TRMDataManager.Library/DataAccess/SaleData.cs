@@ -50,20 +50,34 @@ namespace MarmurexTCRMDataManager.Library.DataAccess
 
             sale.Total = sale.SubTotal + sale.Tax;
 
-            //Save the sale model
-            SqlDataAccess sql = new SqlDataAccess();
-            sql.SaveData("dbo.spSale_Insert", sale, "TCRMMarmurexDatabase");
-
-            //Get the ID from the sale mode
-            sale.Id = sql.LoadData<int, dynamic>("spSale_Lookup", new { sale.CashierId, sale.SaleDate }, "TCRMMarmurexDatabase").FirstOrDefault();
-
-            foreach (var item in details)
+            
+            using(SqlDataAccess sql = new SqlDataAccess())
             {
-                item.SaleId = sale.Id;
-                //Save the detail model
-                sql.SaveData("dbo.spSaleDetail_Insert", item, "TCRMMarmurexDatabase");
-            }
+                try
+                {
+                    sql.StartTransaction("TCRMMarmurexDatabase");
 
+                    //Save the sale model
+                    sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
+
+                    //Get the ID from the sale mode
+                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("spSale_Lookup", new { sale.CashierId, sale.SaleDate }).FirstOrDefault();
+
+                    foreach (var item in details)
+                    {
+                        item.SaleId = sale.Id;
+                        //Save the detail model
+                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
+                    }
+
+                    sql.CommitTransaction();
+                }
+                catch 
+                {
+                    sql.RollbackTransaction();
+                    throw;
+                }
+            }
         }
     }
 }
