@@ -220,6 +220,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\SaleController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -325,6 +326,10 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MarmurexTCRMDesktopUI.Library\MarmurexTCRMDesktopUI.Library.csproj">
+      <Project>{7775420D-7F2A-4135-A525-A84CE302B746}</Project>
+      <Name>MarmurexTCRMDesktopUI.Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TRMDataManager.Library\MarmurexTCRMDataManager.Library.csproj">
       <Project>{66A7C620-8F13-4FCA-A5AC-7654345C544F}</Project>
       <Name>MarmurexTCRMDataManager.Library</Name>

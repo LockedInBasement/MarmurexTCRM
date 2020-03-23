@@ -79,5 +79,14 @@ namespace MarmurexTCRMDataManager.Library.DataAccess
                 }
             }
         }
+
+        public List<SaleReportModel> GetSaleReport()
+        {
+            SqlDataAccess sql = new SqlDataAccess();
+
+            var output = sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_Report", new { }, "TCRMMarmurexDatabase");
+
+            return output;
+        }
     }
 }
