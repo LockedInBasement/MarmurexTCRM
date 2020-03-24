@@ -49,6 +49,7 @@ namespace MarmurexTCRMDesktopUI
 
             _container.Instance(_container)
                 .PerRequest<IProductEndpoint, ProductEndpoint>()
+                .PerRequest<IUserEndpoint, UserEndpoint>()
                 .PerRequest<ISaleEndPoint, SaleEndPoint>();
 
             _container

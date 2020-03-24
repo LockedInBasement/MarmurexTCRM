@@ -11,8 +11,7 @@ using MarmurexTCRMDataManager.Models;
 
 namespace MarmurexTCRMDataManager.Controllers
 {
-    [Authorize]
-    [RoutePrefix("api/User")]
+    //[Authorize]
     public class UserController : ApiController
     {
         // GET: User/Details/5
@@ -26,9 +25,9 @@ namespace MarmurexTCRMDataManager.Controllers
             return userData.GetUserById(userId).First();
         }
 
-        [AllowAnonymous]
+        //[Authorize(Roles ="Admin")]
         [HttpGet]
-        [Route("Admin/GetAllUsers")]
+        [Route("api/User/Admin/GetAllUsers")]
         public List<ApplicationUserModel> GetAllUsers()
         {
             List<ApplicationUserModel> output = new List<ApplicationUserModel>();
