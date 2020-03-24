@@ -46,7 +46,9 @@ namespace MarmurexTCRMDataManager.Library.Internal.DataAccess
         //OPenConnection/start transaction
         public void StartTransaction(string connectionStringName)
         {
-            _connection = new SqlConnection(connectionStringName);
+            string connectionString = GetConnectionString(connectionStringName);
+
+            _connection = new SqlConnection(connectionString);
             _connection.Open();
 
             _transaction = _connection.BeginTransaction();
@@ -84,7 +86,7 @@ namespace MarmurexTCRMDataManager.Library.Internal.DataAccess
 
         public void Dispose()
         {
-            if(isClosed)
+            if(isClosed == false)
             {
                 try
                 {

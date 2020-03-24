@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[spSale_SaleReport]
+﻿CREATE PROCEDURE [dbo].[spSale_Report]
 AS
 begin
 	set nocount on;

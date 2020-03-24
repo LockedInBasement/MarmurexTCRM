@@ -19,6 +19,7 @@ namespace MarmurexTCRMDataManager.Controllers
             return data.GetInventory();
         }
 
+        [Route("GetSalesReport")]
         public void Post(InventoryModel item)
         {
             InventoryData data = new InventoryData();

@@ -10,6 +10,8 @@ using MarmurexTCRMDesktopUI.Library.Models;
 using MarmurexTCRMDesktopUI.Library.Helpers;
 using AutoMapper;
 using MarmurexTCRMDesktopUI.Models;
+using System.Dynamic;
+using System.Windows;
 
 namespace MarmurexTCRMDesktopUI.ViewModels
 {
@@ -19,13 +21,17 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 		IConfigHelper _configHelper;
 		ISaleEndPoint _saleEndPoint;
 		IMapper _mapper;
+		StatusInfoViewModel _status;
+		IWindowManager _window;
 
-		public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndPoint saleEndPoint, IMapper mapper)
+		public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndPoint saleEndPoint, IMapper mapper, StatusInfoViewModel  status,IWindowManager window)
 		{
 			_productEndpoint = productEndpoint;
 			_configHelper = configHelper;
 			_saleEndPoint = saleEndPoint;
 			_mapper = mapper;
+			_status = status;
+			_window = window;
 		}
 
 		public async Task LoadProducts()
@@ -39,7 +45,26 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 		protected override async void OnViewLoaded(object view)
 		{
 			base.OnViewLoaded(view);
-			await LoadProducts();
+
+			try
+			{
+				await LoadProducts();
+			}
+			catch (Exception ex)
+			{
+				dynamic settings = new ExpandoObject();
+				settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+				settings.ResizeMode = ResizeMode.NoResize;
+				settings.Title = "System ERROR";
+
+				if(ex.Message == "Unathorized")
+				{
+					_status.UpdateMessage("Unathorized", "Permission");
+					_window.ShowDialog(_status, null, settings);
+				}
+
+				TryClose();
+			}
 		}
 
 		private BindingList<ProductDisplayModel> _products;

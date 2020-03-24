@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity;
 
 namespace MarmurexTCRMDataManager.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class SaleController : ApiController
     {
         public void Post(SaleModel sale)
@@ -21,7 +21,7 @@ namespace MarmurexTCRMDataManager.Controllers
             data.SaveSale(sale, userId);
         }
 
-        [Route("GetSalesReport")]
+        //[Route("GetSalesReport")]
         public List<SaleReportModel> GetSaleReport()
         {
             SaleData data = new SaleData();
