@@ -9,9 +9,10 @@ using MarmurexTCRMDataManager.Library.Models;
 
 namespace MarmurexTCRMDataManager.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class InventoryController : ApiController
     {
+        [Authorize(Roles = "Manager,Admin")]
         public List<InventoryModel> GetSalesReport()
         {
             InventoryData data = new InventoryData();
@@ -19,6 +20,7 @@ namespace MarmurexTCRMDataManager.Controllers
             return data.GetInventory();
         }
 
+        [Authorize(Roles = "Admin")]
         public void Post(InventoryModel item)
         {
             InventoryData data = new InventoryData();

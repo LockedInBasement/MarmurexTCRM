@@ -10,7 +10,7 @@ using MarmurexTCRMDataManager.Library.Models;
 
 namespace MarmurexTCRMDataManager.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Cashier,Manager,Admin")]
     public class ProductController : ApiController
     {
         public List<ProductModel> Get()
