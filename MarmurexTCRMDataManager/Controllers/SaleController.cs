@@ -21,7 +21,7 @@ namespace MarmurexTCRMDataManager.Controllers
             data.SaveSale(sale, userId);
         }
 
-        //[Route("GetSalesReport")]
+        [Route("GetSalesReport")]
         public List<SaleReportModel> GetSaleReport()
         {
             SaleData data = new SaleData();
