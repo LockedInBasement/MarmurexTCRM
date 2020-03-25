@@ -30,17 +30,87 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 			}
 		}
 
+		private UserModel _selectedUser;
+
+		public UserModel SelectedUser
+		{
+			get { return _selectedUser; }
+			set 
+			{ 
+				_selectedUser = value;
+				SelectedUserName = value.Email;
+				UserRoles.Clear();
+				UserRoles = new BindingList<string>(value.Roles.Select(x => x.Value).ToList());
+				LoadRoles();
+				NotifyOfPropertyChange(() => SelectedUser);
+			}
+		}
+
+		private string _selectedUserRole;
+
+		public string SelectedUserRole
+		{
+			get { return _selectedUserRole; }
+			set 
+			{ 
+				_selectedUserRole = value;
+				NotifyOfPropertyChange(() => SelectedUserRole);
+			}
+		}
+
+		private string _selectedAvaliableRole;
+
+		public string SelectedAvaliableRole
+		{
+			get { return _selectedAvaliableRole; }
+			set 
+			{ 
+				_selectedAvaliableRole = value;
+				NotifyOfPropertyChange(() => SelectedAvaliableRole);
+			}
+		}
+
+		private string _selectedUserName;
+
+		public string SelectedUserName
+		{
+			get { return _selectedUserName; }
+			set 
+			{ 
+				_selectedUserName = value;
+				NotifyOfPropertyChange(() => SelectedUserName);
+			}
+		}
+
+		private BindingList<string> _userRoles = new BindingList<string>();
+
+		public BindingList<string> UserRoles
+		{
+			get { return _userRoles; }
+			set
+			{
+				_userRoles = value;
+				NotifyOfPropertyChange(() => UserRoles);
+			}
+		}
+
+		private BindingList<string> _availableRole = new BindingList<string>();
+
+		public BindingList<string> AvailableRole
+		{
+			get { return _availableRole; }
+			set 
+			{
+				_availableRole = value;
+				NotifyOfPropertyChange(() => AvailableRole);
+			}
+		}
+
 		public UserDisplayViewModel(StatusInfoViewModel status, IWindowManager window, IUserEndpoint userEndPoint)
 		{
 			_status = status;
 			_window = window;
 			_userEndPoint = userEndPoint;
-		}
-
-		public async Task LoadUsers()
-		{
-			var userList = await _userEndPoint.GetAll();
-			Users = new BindingList<UserModel>(userList);
 		}
 
 		protected override async void OnViewLoaded(object view)
@@ -65,6 +135,55 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 				}
 
 				TryClose();
+			}
+		}
+
+		public async Task LoadUsers()
+		{
+			var userList = await _userEndPoint.GetAll();
+			Users = new BindingList<UserModel>(userList);
+		}
+
+		public async void AddSelectedRole()
+		{
+			try
+			{
+				await _userEndPoint.AddUserToRole(SelectedUser.Id, SelectedAvaliableRole);
+				UserRoles.Add(SelectedAvaliableRole);
+				AvailableRole.Remove(SelectedAvaliableRole);
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		public async void RemoveSelectedRole()
+		{
+			try
+			{
+				await _userEndPoint.RemoveUserFromRole(SelectedUser.Id, SelectedUserRole);
+				AvailableRole.Add(SelectedUserRole);
+				UserRoles.Remove(SelectedUserRole);
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		private async Task LoadRoles()
+		{
+			var roles = await _userEndPoint.GetAllRoles();
+
+			foreach (var role in roles)
+			{
+				if (UserRoles.IndexOf(role.Value) < 0)
+				{
+					AvailableRole.Add(role.Value);
+				}
 			}
 		}
 	}
