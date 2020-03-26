@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using TCRMMarmurexApi.Data;
 using TCRMMarmurexApi.Models;
 
@@ -21,11 +22,13 @@ namespace TCRMMarmurexApi.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration configuration;
 
-        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            this.configuration = configuration;
         }
 
         // GET: User/Details/5
@@ -34,7 +37,7 @@ namespace TCRMMarmurexApi.Controllers
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier); //RequestContext.Principal.Identity.GetUserId();
 
-            UserData userData = new UserData();
+            UserData userData = new UserData(configuration);
 
             return userData.GetUserById(userId).First();
         }

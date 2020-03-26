@@ -7,6 +7,7 @@ using MarmurexTCRMDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace TCRMMarmurexApi.Controllers
 {
@@ -15,10 +16,17 @@ namespace TCRMMarmurexApi.Controllers
     [Authorize]
     public class InventoryController : ControllerBase
     {
+        private readonly IConfiguration configuration;
+
+        public InventoryController(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         [Authorize(Roles = "Manager,Admin")]
         public List<InventoryModel> GetSalesReport()
         {
-            InventoryData data = new InventoryData();
+            InventoryData data = new InventoryData(configuration);
 
             return data.GetInventory();
         }
@@ -26,7 +34,7 @@ namespace TCRMMarmurexApi.Controllers
         [Authorize(Roles = "Admin")]
         public void Post(InventoryModel item)
         {
-            InventoryData data = new InventoryData();
+            InventoryData data = new InventoryData(configuration);
 
             data.SaveInventoryRecord(item);
         }

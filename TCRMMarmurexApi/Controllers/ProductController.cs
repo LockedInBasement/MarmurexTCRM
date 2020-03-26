@@ -7,6 +7,7 @@ using MarmurexTCRMDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace TCRMMarmurexApi.Controllers
 {
@@ -15,9 +16,17 @@ namespace TCRMMarmurexApi.Controllers
     [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
+        private readonly IConfiguration configuration;
+
+        public ProductController(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
+
         public List<ProductModel> Get()
         {
-            ProductData data = new ProductData();
+            ProductData data = new ProductData(configuration);
 
             return data.GetProducts();
         }

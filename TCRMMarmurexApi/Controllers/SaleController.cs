@@ -8,6 +8,7 @@ using MarmurexTCRMDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace TCRMMarmurexApi.Controllers
 {
@@ -16,10 +17,17 @@ namespace TCRMMarmurexApi.Controllers
     [Authorize]
     public class SaleController : ControllerBase
     {
+        private readonly IConfiguration configuration;
+
+        public SaleController(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         [Authorize(Roles = "Cashier")]
         public void Post(SaleModel sale)
         {
-            SaleData data = new SaleData();
+            SaleData data = new SaleData(configuration);
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             data.SaveSale(sale, userId);
@@ -29,7 +37,7 @@ namespace TCRMMarmurexApi.Controllers
         [Route("GetSalesReport")]
         public List<SaleReportModel> GetSaleReport()
         {
-            SaleData data = new SaleData();
+            SaleData data = new SaleData(configuration);
 
             return data.GetSaleReport();
         }
