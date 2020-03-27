@@ -17,21 +17,20 @@ namespace TCRMMarmurexApi.Controllers
     [Authorize]
     public class SaleController : ControllerBase
     {
-        private readonly IConfiguration configuration;
+        private readonly ISaleData saleData;
 
-        public SaleController(IConfiguration configuration)
+        public SaleController(ISaleData saleData)
         {
-            this.configuration = configuration;
+            this.saleData = saleData;
         }
 
         [Authorize(Roles = "Cashier")]
         [HttpPost]
         public void Post(SaleModel sale)
         {
-            SaleData data = new SaleData(configuration);
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            data.SaveSale(sale, userId);
+            saleData.SaveSale(sale, userId);
         }
 
         [Authorize(Roles = "Manager,Admin")]
@@ -39,10 +38,7 @@ namespace TCRMMarmurexApi.Controllers
         [HttpGet]
         public List<SaleReportModel> GetSaleReport()
         {
-            SaleData data = new SaleData(configuration);
-
-            return data.GetSaleReport();
+            return saleData.GetSaleReport();
         }
-
     }
 }

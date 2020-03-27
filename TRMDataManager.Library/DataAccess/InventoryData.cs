@@ -9,29 +9,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace MarmurexTCRMDataManager.Library.DataAccess
 {
-    public class InventoryData
+    public class InventoryData : IInventoryData
     {
         private readonly IConfiguration configuration;
+        private readonly ISqlDataAccess sqlDataAccess;
 
-        public InventoryData(IConfiguration configuration)
+        public InventoryData(IConfiguration configuration, ISqlDataAccess sqlDataAccess)
         {
             this.configuration = configuration;
+            this.sqlDataAccess = sqlDataAccess;
         }
 
         public List<InventoryModel> GetInventory()
         {
-            SqlDataAccess sql = new SqlDataAccess(configuration);
-
-            var output = sql.LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "TCRMMarmurexDatabase");
+            var output = sqlDataAccess.LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "TCRMMarmurexDatabase");
 
             return output;
         }
 
         public void SaveInventoryRecord(InventoryModel item)
         {
-            SqlDataAccess sql = new SqlDataAccess(configuration);
-
-            sql.SaveData("dbo.spInventory_Insert", item, "TCRMMarmurexDatabase");
+            sqlDataAccess.SaveData("dbo.spInventory_Insert", item, "TCRMMarmurexDatabase");
         }
     }
 }

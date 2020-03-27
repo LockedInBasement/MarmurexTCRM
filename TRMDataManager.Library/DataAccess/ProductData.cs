@@ -9,29 +9,25 @@ using System.Threading.Tasks;
 
 namespace MarmurexTCRMDataManager.Library.DataAccess
 {
-    public class ProductData
+    public class ProductData : IProductData
     {
-        private readonly IConfiguration configuration;
+        private readonly ISqlDataAccess sqlDataAccess;
 
-        public ProductData(IConfiguration configuration)
+        public ProductData(ISqlDataAccess sqlDataAccess)
         {
-            this.configuration = configuration;
+            this.sqlDataAccess = sqlDataAccess;
         }
 
         public List<ProductModel> GetProducts()
         {
-            SqlDataAccess sql = new SqlDataAccess(configuration);
-
-            var output = sql.LoadData<ProductModel, dynamic>("dbo.spProduct_GetAll", new { }, "TCRMMarmurexDatabase");
+            var output = sqlDataAccess.LoadData<ProductModel, dynamic>("dbo.spProduct_GetAll", new { }, "TCRMMarmurexDatabase");
 
             return output;
         }
 
         public ProductModel GetProductById(int productId)
         {
-            SqlDataAccess sql = new SqlDataAccess(configuration);
-
-            var output = sql.LoadData<ProductModel, dynamic>("dbo.spProduct_GetById", new { Id = productId }, "TCRMMarmurexDatabase").FirstOrDefault();
+            var output = sqlDataAccess.LoadData<ProductModel, dynamic>("dbo.spProduct_GetById", new { Id = productId }, "TCRMMarmurexDatabase").FirstOrDefault();
 
             return output;
         }

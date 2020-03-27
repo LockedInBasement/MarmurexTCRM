@@ -10,18 +10,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace MarmurexTCRMDataManager.Library.Internal.DataAccess
 {
-    internal class SqlDataAccess : IDisposable
+    public class SqlDataAccess : IDisposable, ISqlDataAccess
     {
-        private readonly IConfiguration _config;
-
-        public SqlDataAccess(IConfiguration config)
+        public SqlDataAccess()
         {
-            _config = config;
+            
         }
 
         public string GetConnectionString(string name)
         {
-            return _config.GetConnectionString(name);
+            return "";//_config.GetConnectionString(name);
         }
 
         public List<T> LoadData<T, U>(string storedProcedure, U parameters, string connectionStringName)
@@ -66,12 +64,12 @@ namespace MarmurexTCRMDataManager.Library.Internal.DataAccess
 
         public void SaveDataInTransaction<T>(string storedProcedure, T parameters)
         {
-            _connection.Execute(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction : _transaction);
+            _connection.Execute(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
         public List<T> LoadDataInTransaction<T, U>(string storedProcedure, U parameters)
         {
-            List<T> rows = _connection.Query<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure ,  transaction: _transaction).ToList();
+            List<T> rows = _connection.Query<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure, transaction: _transaction).ToList();
 
             return rows;
         }
@@ -94,7 +92,7 @@ namespace MarmurexTCRMDataManager.Library.Internal.DataAccess
 
         public void Dispose()
         {
-            if(isClosed == false)
+            if (isClosed == false)
             {
                 try
                 {

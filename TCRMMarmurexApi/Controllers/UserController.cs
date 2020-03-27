@@ -22,13 +22,13 @@ namespace TCRMMarmurexApi.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration configuration;
+        private readonly IUserData userData;
 
-        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IUserData userData)
         {
             _context = context;
             _userManager = userManager;
-            this.configuration = configuration;
+            this.userData = userData;
         }
 
         // GET: User/Details/5
@@ -36,8 +36,6 @@ namespace TCRMMarmurexApi.Controllers
         public UserModel GetById()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier); //RequestContext.Principal.Identity.GetUserId();
-
-            UserData userData = new UserData(configuration);
 
             return userData.GetUserById(userId).First();
         }

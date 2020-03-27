@@ -9,22 +9,22 @@ using Microsoft.Extensions.Configuration;
 
 namespace MarmurexTCRMDataManager.Library.DataAccess
 {
-    public class UserData
+    public class UserData : IUserData
     {
         private readonly IConfiguration configuration;
+        private readonly ISqlDataAccess sqlDataAccess;
 
-        public UserData(IConfiguration configuration)
+        public UserData(IConfiguration configuration, ISqlDataAccess sqlDataAccess)
         {
             this.configuration = configuration;
+            this.sqlDataAccess = sqlDataAccess;
         }
 
         public List<UserModel> GetUserById(string Id)
         {
-            SqlDataAccess sql = new SqlDataAccess(configuration);
-
             var p = new { Id = Id };
 
-            var output = sql.LoadData<UserModel, dynamic>("dbo.spUserLookup", p, "TCRMMarmurexDatabase");
+            var output = sqlDataAccess.LoadData<UserModel, dynamic>("dbo.spUserLookup", p, "TCRMMarmurexDatabase");
 
             return output;
         }

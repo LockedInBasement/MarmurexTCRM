@@ -10,20 +10,22 @@ using System.Threading.Tasks;
 
 namespace MarmurexTCRMDataManager.Library.DataAccess
 {
-    public class SaleData
+    public class SaleData : ISaleData
     {
-        private readonly IConfiguration configuration;
+        private readonly ISqlDataAccess sqlDataAccess;
+        private readonly IProductData productData;
 
-        public SaleData(IConfiguration configuration)
+        public SaleData(ISqlDataAccess sqlDataAccess, IProductData productData)
         {
-            this.configuration = configuration;
+            this.sqlDataAccess = sqlDataAccess;
+            this.productData = productData;
         }
 
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
             List<SaleDetailDBModel> details = new List<SaleDetailDBModel>();
-            ProductData products = new ProductData(configuration);
-            var taxRate = ConfigHelper.GetTaxRate() /100;
+
+            var taxRate = ConfigHelper.GetTaxRate() / 100;
 
             foreach (var item in saleInfo.SaleDetails)
             {
@@ -33,16 +35,16 @@ namespace MarmurexTCRMDataManager.Library.DataAccess
                     Quantity = item.Quantity
                 };
 
-                var productInfo = products.GetProductById(item.ProductId);
+                var productInfo = productData.GetProductById(item.ProductId);
 
-                if(productInfo == null)
+                if (productInfo == null)
                 {
                     throw new Exception($"The product Id of {item.ProductId} could not be found in the database.");
                 }
 
                 detail.PurchasePrice = (productInfo.RetailPrice * detail.Quantity);
 
-                if(productInfo.IsTaxable)
+                if (productInfo.IsTaxable)
                 {
                     detail.Tax = (detail.PurchasePrice * taxRate);
                 }
@@ -59,41 +61,36 @@ namespace MarmurexTCRMDataManager.Library.DataAccess
 
             sale.Total = sale.SubTotal + sale.Tax;
 
-            
-            using(SqlDataAccess sql = new SqlDataAccess(configuration))
+            try
             {
-                try
+                sqlDataAccess.StartTransaction("TCRMMarmurexDatabase");
+
+                //Save the sale model
+                sqlDataAccess.SaveDataInTransaction("dbo.spSale_Insert", sale);
+
+                //Get the ID from the sale mode
+                sale.Id = sqlDataAccess.LoadDataInTransaction<int, dynamic>("spSale_Lookup", new { sale.CashierId, sale.SaleDate }).FirstOrDefault();
+
+                foreach (var item in details)
                 {
-                    sql.StartTransaction("TCRMMarmurexDatabase");
-
-                    //Save the sale model
-                    sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
-
-                    //Get the ID from the sale mode
-                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("spSale_Lookup", new { sale.CashierId, sale.SaleDate }).FirstOrDefault();
-
-                    foreach (var item in details)
-                    {
-                        item.SaleId = sale.Id;
-                        //Save the detail model
-                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
-                    }
-
-                    sql.CommitTransaction();
+                    item.SaleId = sale.Id;
+                    //Save the detail model
+                    sqlDataAccess.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
                 }
-                catch 
-                {
-                    sql.RollbackTransaction();
-                    throw;
-                }
+
+                sqlDataAccess.CommitTransaction();
             }
+            catch
+            {
+                sqlDataAccess.RollbackTransaction();
+                throw;
+            }
+
         }
 
         public List<SaleReportModel> GetSaleReport()
         {
-            SqlDataAccess sql = new SqlDataAccess(configuration);
-
-            var output = sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_Report", new { }, "TCRMMarmurexDatabase");
+            var output = sqlDataAccess.LoadData<SaleReportModel, dynamic>("dbo.spSale_Report", new { }, "TCRMMarmurexDatabase");
 
             return output;
         }
