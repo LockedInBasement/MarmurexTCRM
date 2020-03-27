@@ -7,19 +7,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace MarmurexTCRMDataManager.Library.Internal.DataAccess
 {
     public class SqlDataAccess : IDisposable, ISqlDataAccess
     {
-        public SqlDataAccess()
+        private readonly IConfiguration configuration;
+        private readonly ILogger<SqlDataAccess> logger;
+
+        public SqlDataAccess(IConfiguration configuration, ILogger<SqlDataAccess> logger)
         {
-            
+            this.configuration = configuration;
+            this.logger = logger;
         }
 
         public string GetConnectionString(string name)
         {
-            return "";//_config.GetConnectionString(name);
+            return configuration.GetConnectionString(name);
         }
 
         public List<T> LoadData<T, U>(string storedProcedure, U parameters, string connectionStringName)
@@ -98,9 +103,9 @@ namespace MarmurexTCRMDataManager.Library.Internal.DataAccess
                 {
                     CommitTransaction();
                 }
-                catch
+                catch(Exception ex)
                 {
-                    throw;
+                    logger.LogError(ex, "Dispose failed");
                 }
             }
 
