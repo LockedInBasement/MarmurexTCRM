@@ -1,3 +1,5 @@
 1.Auth bug(login)
 2.Fill database(new user identity)
 3.Materials(WPF)
+
+WORK SUSPENDED UNTIL CALIBURN MICRO STABLE VERSION RELEASE 
