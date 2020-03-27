@@ -24,7 +24,8 @@ namespace TCRMMarmurexApi.Controllers
         }
 
         [Authorize(Roles = "Manager,Admin")]
-        public List<InventoryModel> GetSalesReport()
+        [HttpGet]
+        public List<InventoryModel> Get()
         {
             InventoryData data = new InventoryData(configuration);
 
@@ -32,6 +33,7 @@ namespace TCRMMarmurexApi.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
         public void Post(InventoryModel item)
         {
             InventoryData data = new InventoryData(configuration);

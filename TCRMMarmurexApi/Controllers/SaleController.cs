@@ -25,6 +25,7 @@ namespace TCRMMarmurexApi.Controllers
         }
 
         [Authorize(Roles = "Cashier")]
+        [HttpPost]
         public void Post(SaleModel sale)
         {
             SaleData data = new SaleData(configuration);
@@ -35,6 +36,7 @@ namespace TCRMMarmurexApi.Controllers
 
         [Authorize(Roles = "Manager,Admin")]
         [Route("GetSalesReport")]
+        [HttpGet]
         public List<SaleReportModel> GetSaleReport()
         {
             SaleData data = new SaleData(configuration);

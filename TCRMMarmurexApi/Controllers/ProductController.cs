@@ -23,7 +23,7 @@ namespace TCRMMarmurexApi.Controllers
             this.configuration = configuration;
         }
 
-
+        [HttpGet]
         public List<ProductModel> Get()
         {
             ProductData data = new ProductData(configuration);
