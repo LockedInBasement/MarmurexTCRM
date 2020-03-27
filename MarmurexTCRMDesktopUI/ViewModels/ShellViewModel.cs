@@ -7,6 +7,7 @@ using Caliburn.Micro;
 using MarmurexTCRMDesktopUI.EventModels; 
 using MarmurexTCRMDesktopUI.Library.Models;
 using MarmurexTCRMDesktopUI.Library.Api;
+using System.Threading;
 
 namespace MarmurexTCRMDesktopUI.ViewModels
 {
@@ -17,15 +18,15 @@ namespace MarmurexTCRMDesktopUI.ViewModels
         private ILoggedInUserModel _user;
         private IAPIHelper _aPIHelper;
 
-        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM, ILoggedInUserModel loggedInUserModel, IAPIHelper aPIHelper)
+        public  ShellViewModel(IEventAggregator events, SalesViewModel salesVM, ILoggedInUserModel loggedInUserModel, IAPIHelper aPIHelper)
         {
             _events = events;
             _salesVM = salesVM;
             _user = loggedInUserModel;
             _aPIHelper = aPIHelper;
 
-            _events.Subscribe(this);     
-            ActivateItem(IoC.Get<LoginViewModel>());
+            _events.SubscribeOnPublishedThread(this);
+            ActivateItemAsync(IoC.Get<LoginViewModel>(), new CancellationToken());
         }
 
         public bool IsLoggedIn
@@ -45,26 +46,25 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 
         public void ExitApplication()
         {
-            TryClose();
+            TryCloseAsync();
         }
 
-        public void UserManagment()
+        public async Task UserManagment()
         {
-            ActivateItem(IoC.Get<UserDisplayViewModel>());
+            await ActivateItemAsync(IoC.Get<UserDisplayViewModel>(), new CancellationToken());
         }
 
-        public void LogOut()
+        public async Task LogOut()
         {
             _user.ResetUser();
             _aPIHelper.LogOffUser();
-            ActivateItem(IoC.Get<LoginViewModel>());
+            await ActivateItemAsync(IoC.Get<LoginViewModel>(), new CancellationToken());
             NotifyOfPropertyChange(() => IsLoggedIn);
-
         }
 
-        public void Handle(LogOnEvent message)
+        public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
-            ActivateItem(_salesVM);
+            await ActivateItemAsync(_salesVM, cancellationToken);
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
     }

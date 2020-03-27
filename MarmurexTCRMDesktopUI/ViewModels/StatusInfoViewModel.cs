@@ -23,7 +23,7 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 
         public void Close()
         {
-            TryClose();
+            TryCloseAsync();
 
         }
     }

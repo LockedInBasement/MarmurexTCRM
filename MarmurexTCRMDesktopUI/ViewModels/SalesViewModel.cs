@@ -60,10 +60,15 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 				if(ex.Message == "Unathorized")
 				{
 					_status.UpdateMessage("Unathorized", "Permission");
-					_window.ShowDialog(_status, null, settings);
+					await  _window.ShowDialogAsync(_status, null, settings);
+				}
+				else
+				{
+					_status.UpdateMessage("Fatal Exception", ex.Message);
+					await _window.ShowDialogAsync(_status, null, settings);
 				}
 
-				TryClose();
+				TryCloseAsync();
 			}
 		}
 
