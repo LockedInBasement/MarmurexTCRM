@@ -14,14 +14,12 @@ namespace MarmurexTCRMDesktopUI.ViewModels
     public class ShellViewModel : Conductor<object> , IHandle<LogOnEvent>
     {
         private IEventAggregator _events;
-        private SalesViewModel _salesVM;
         private ILoggedInUserModel _user;
         private IAPIHelper _aPIHelper;
 
-        public  ShellViewModel(IEventAggregator events, SalesViewModel salesVM, ILoggedInUserModel loggedInUserModel, IAPIHelper aPIHelper)
+        public  ShellViewModel(IEventAggregator events, ILoggedInUserModel loggedInUserModel, IAPIHelper aPIHelper)
         {
             _events = events;
-            _salesVM = salesVM;
             _user = loggedInUserModel;
             _aPIHelper = aPIHelper;
 
@@ -64,7 +62,7 @@ namespace MarmurexTCRMDesktopUI.ViewModels
 
         public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
-            await ActivateItemAsync(_salesVM, cancellationToken);
+            await ActivateItemAsync(IoC.Get<LoginViewModel>(), cancellationToken);
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
     }
