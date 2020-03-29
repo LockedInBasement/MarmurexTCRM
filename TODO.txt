@@ -3,3 +3,6 @@
 3.Materials(WPF)
 
 WORK SUSPENDED UNTIL CALIBURN MICRO STABLE VERSION RELEASE 
+
+View models imported: LOgin, Sales,Shell, StatusInfo, User Display
+Rest vm is missing
